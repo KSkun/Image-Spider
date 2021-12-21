@@ -1,8 +1,8 @@
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from typing import List, Union
 
 
-class Spider:
+class Spider(ABC):
     """Spider abstract class"""
 
     # constants
@@ -13,7 +13,7 @@ class Spider:
     # variables
     __result_buffer: List[str] = []  # temporarily store fetched results
 
-    def __init__(self, keyword: str, proxy_addr=None):
+    def __init__(self, keyword: str, proxy_addr: Union[str, None] = None):
         self.keyword = keyword
         self.proxy_addr = proxy_addr
 

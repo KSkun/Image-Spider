@@ -1,6 +1,5 @@
 import json
-from abc import ABC
-from typing import List, Dict
+from typing import List, Dict, Union
 from urllib.parse import parse_qs, urlparse
 
 import requests
@@ -8,7 +7,7 @@ import requests
 from spider.spider import Spider
 
 
-class BaiduSpider(Spider, ABC):
+class BaiduSpider(Spider):
     """Baidu Image Search Engine spider"""
 
     # constants
@@ -25,7 +24,7 @@ class BaiduSpider(Spider, ABC):
     # variables
     __fetched_count: int = 0
 
-    def __init__(self, keyword: str, proxy_addr=None):
+    def __init__(self, keyword: str, proxy_addr: Union[str, None] = None):
         super().__init__(keyword, proxy_addr)
         self.search_engine_name = 'baidu'
 
