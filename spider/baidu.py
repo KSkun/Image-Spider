@@ -3,7 +3,6 @@ from abc import ABC
 from typing import List, Dict
 from urllib.parse import parse_qs, urlparse
 
-import parse
 import requests
 
 from spider.spider import Spider
@@ -26,8 +25,9 @@ class BaiduSpider(Spider, ABC):
     # variables
     __fetched_count: int = 0
 
-    def __init__(self, keyword):
-        super().__init__(keyword)
+    def __init__(self, keyword: str, proxy_addr=None):
+        super().__init__(keyword, proxy_addr)
+        self.search_engine_name = 'baidu'
 
     def __decode_url(self, url_encoded: str):
         url = ''
@@ -57,7 +57,10 @@ class BaiduSpider(Spider, ABC):
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0',
             'X-Requested-With': 'XMLHttpRequest'
         }
-        r = requests.get(self.__api_url, params=params, headers=headers)
+        proxies = {}
+        if self.proxy_addr is not None:
+            proxies['https'] = self.proxy_addr
+        r = requests.get(self.__api_url, params=params, headers=headers, proxies=proxies)
         r.raise_for_status()
 
         # parse body
