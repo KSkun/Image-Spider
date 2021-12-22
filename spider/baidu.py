@@ -6,20 +6,20 @@ import requests
 
 from spider.spider import Spider
 
+# constants
+_api_url: str = 'https://image.baidu.com/search/acjson'
+_page_limit: int = 100
+
+_decoding_map_digit_letter: Dict[str, str] = {
+    'w': 'a', 'k': 'b', 'v': 'c', '1': 'd', 'j': 'e', 'u': 'f', '2': 'g', 'i': 'h', 't': 'i', '3': 'j', 'h': 'k',
+    's': 'l', '4': 'm', 'g': 'n', '5': 'o', 'r': 'p', 'q': 'q', '6': 'r', 'f': 's', 'p': 't', '7': 'u', 'e': 'v',
+    'o': 'w', '8': '1', 'd': '2', 'n': '3', '9': '4', 'c': '5', 'm': '6', '0': '7', 'b': '8', 'l': '9', 'a': '0'
+}
+_decoding_map_symbol: Dict[str, str] = {'_z2C$q': ':', '_z&e3B': '.', 'AzdH3F': '/'}
+
 
 class BaiduSpider(Spider):
     """Baidu Image Search Engine spider"""
-
-    # constants
-    __api_url: str = 'https://image.baidu.com/search/acjson'
-    __page_limit: int = 100
-
-    __decoding_map_digit_letter: Dict[str, str] = {
-        'w': 'a', 'k': 'b', 'v': 'c', '1': 'd', 'j': 'e', 'u': 'f', '2': 'g', 'i': 'h', 't': 'i', '3': 'j', 'h': 'k',
-        's': 'l', '4': 'm', 'g': 'n', '5': 'o', 'r': 'p', 'q': 'q', '6': 'r', 'f': 's', 'p': 't', '7': 'u', 'e': 'v',
-        'o': 'w', '8': '1', 'd': '2', 'n': '3', '9': '4', 'c': '5', 'm': '6', '0': '7', 'b': '8', 'l': '9', 'a': '0'
-    }
-    __decoding_map_symbol: Dict[str, str] = {'_z2C$q': ':', '_z&e3B': '.', 'AzdH3F': '/'}
 
     # variables
     __fetched_count: int = 0
@@ -28,13 +28,14 @@ class BaiduSpider(Spider):
         super().__init__(keyword, proxy_addr)
         self.search_engine_name = 'baidu'
 
-    def __decode_url(self, url_encoded: str):
+    @staticmethod
+    def __decode_url(url_encoded: str):
         url = ''
-        for src, dst in self.__decoding_map_symbol.items():
+        for src, dst in _decoding_map_symbol.items():
             url_encoded = url_encoded.replace(src, dst)
         for c in url_encoded:
-            if c in self.__decoding_map_digit_letter:
-                url += self.__decoding_map_digit_letter[c]
+            if c in _decoding_map_digit_letter:
+                url += _decoding_map_digit_letter[c]
             else:
                 url += c
         return url
@@ -46,7 +47,7 @@ class BaiduSpider(Spider):
             'ipn': 'rj',
             'word': self.keyword,
             'pn': self.__fetched_count,
-            'rn': self.__page_limit
+            'rn': _page_limit
         }
         headers = {
             'Accept': 'text/plain, */*; q=0.01',
@@ -59,7 +60,7 @@ class BaiduSpider(Spider):
         proxies = {}
         if self.proxy_addr is not None:
             proxies['https'] = self.proxy_addr
-        r = requests.get(self.__api_url, params=params, headers=headers, proxies=proxies)
+        r = requests.get(_api_url, params=params, headers=headers, proxies=proxies)
         r.raise_for_status()
 
         # parse body
@@ -79,5 +80,5 @@ class BaiduSpider(Spider):
                 real_url = url_params['src'][0]
             results.append(real_url)
 
-        self.__fetched_count += self.__page_limit
+        self.__fetched_count += _page_limit
         return results

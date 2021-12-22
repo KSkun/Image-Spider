@@ -4,13 +4,15 @@ import requests
 
 from spider.spider import Spider
 
+# constants
+_api_url: str = 'https://customsearch.googleapis.com/customsearch/v1'
+_page_limit: int = 10
+
 
 class GoogleSpider(Spider):
     """Google Image Search Engine spider"""
 
     # constants
-    __api_url: str = 'https://customsearch.googleapis.com/customsearch/v1'
-    __page_limit: int = 10
     __engine_id: str
     __api_key: str
 
@@ -30,13 +32,13 @@ class GoogleSpider(Spider):
             'cx': self.__engine_id,
             'key': self.__api_key,
             'q': self.keyword,
-            'num': self.__page_limit,
+            'num': _page_limit,
             'start': self.__fetched_count + 1
         }
         proxies = {}
         if self.proxy_addr is not None:
             proxies['https'] = self.proxy_addr
-        r = requests.get(self.__api_url, params=params, proxies=proxies)
+        r = requests.get(_api_url, params=params, proxies=proxies)
         r.raise_for_status()
 
         # parse body
@@ -54,5 +56,5 @@ class GoogleSpider(Spider):
                     continue
                 results.append(url)
 
-        self.__fetched_count += self.__page_limit
+        self.__fetched_count += _page_limit
         return results
