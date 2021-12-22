@@ -2,6 +2,9 @@
 
 .idea/
 
+workdir/local.json
+workdir/prod.json
+
 ### Python template
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -104,9 +107,9 @@ celerybeat-schedule
 # Environments
 .env
 .venv
-env/
+workdir/
 venv/
-ENV/
+workdir/
 env.bak/
 venv.bak/
 
