@@ -2,7 +2,7 @@ import os
 import random
 import unittest
 
-from spider.google import GoogleSpider
+from src.spider.google import GoogleSpider
 
 
 class TestGoogleSpider(unittest.TestCase):

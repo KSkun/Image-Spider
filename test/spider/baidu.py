@@ -2,7 +2,7 @@ import os
 import random
 import unittest
 
-from spider.baidu import BaiduSpider
+from src.spider.baidu import BaiduSpider
 
 
 class TestBaiduSpider(unittest.TestCase):

@@ -1,6 +1,6 @@
 import unittest
 
-from consumer.client import ConsumerClient
+from src.consumer.client import ConsumerClient
 
 
 class TestConsumerDB(unittest.TestCase):

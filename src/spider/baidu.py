@@ -4,7 +4,7 @@ from urllib.parse import parse_qs, urlparse
 
 import requests
 
-from spider.spider import Spider
+from src.spider.spider import Spider
 
 # constants
 _api_url: str = 'https://image.baidu.com/search/acjson'

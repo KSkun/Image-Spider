@@ -2,7 +2,7 @@ from typing import Dict
 
 import walrus
 
-from consumer.command import SpiderCmd, from_json
+from src.consumer.command import SpiderCmd, from_json
 
 _stream_name: str = 'spider_cmd'
 _group_name: str = 'spider'
