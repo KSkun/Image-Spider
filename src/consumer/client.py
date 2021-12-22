@@ -1,14 +1,17 @@
-from typing import Dict
+import logging
+from typing import Dict, Union
 
 import walrus
 
 from src.consumer.command import SpiderCmd, from_json
 
+_logger = logging.getLogger('image-spider')
+
 _stream_name: str = 'spider_cmd'
 _group_name: str = 'spider'
 _consumer_name_pattern: str = 'con_%d'
 
-_block_time: int = 1000  # 1 second
+_block_time: int = 100  # 100ms
 
 
 class ConsumerClient:
@@ -35,7 +38,7 @@ class ConsumerClient:
                                                     consumer=_consumer_name_pattern % self.__consumer_id)
         self.__stream = getattr(self.__group, _stream_name)
 
-    def read_cmd(self) -> SpiderCmd:
+    def read_cmd(self) -> Union[SpiderCmd, None]:
         result = []
         while len(result) == 0:
             orig_result = self.__group.read(count=1, block=_block_time)
@@ -44,7 +47,12 @@ class ConsumerClient:
             result = orig_result[0][1][0]
         redis_id: str = result[0].decode()
         obj: Dict[bytes, bytes] = result[1]
-        return from_json(redis_id, obj[b'cmd'].decode())
+        try:
+            cmd = from_json(redis_id, obj[b'cmd'].decode())
+        except Exception as e:
+            _logger.error('error when reading cmd, ignore it: %s' % e)
+            return None
+        return cmd
 
     def ack_cmd(self, redis_id: str):
         self.__stream.ack(redis_id)

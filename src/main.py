@@ -19,6 +19,8 @@ if __name__ == '__main__':
     client = ConsumerClient(C.redis_addr, C.redis_port, C.redis_db, C.consumer_id)
     while True:
         cmd = client.read_cmd()
+        if cmd is None:
+            continue
         logger.info(
             'recv cmd id: %s, op: %s, kw: %s, engs: %s' % (cmd.redis_id, cmd.operation, cmd.keyword, cmd.engines))
         cmd.execute()

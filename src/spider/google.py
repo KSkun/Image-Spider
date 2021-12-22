@@ -2,6 +2,7 @@ from typing import List, Union
 
 import requests
 
+from config import C
 from src.spider.spider import Spider
 
 # constants
@@ -19,9 +20,15 @@ class GoogleSpider(Spider):
     # variables
     __fetched_count: int = 0
 
-    def __init__(self, keyword: str, engine_id: str, api_key: str, proxy_addr: Union[str, None] = None):
+    def __init__(self, keyword: str, engine_id: Union[str, None] = None, api_key: Union[str, None] = None,
+                 proxy_addr: Union[str, None] = None):
         super().__init__(keyword, proxy_addr)
         self.search_engine_name = 'google'
+
+        if engine_id is None:
+            engine_id = C.gg_engine_id
+        if api_key is None:
+            api_key = C.gg_api_key
 
         self.__engine_id = engine_id
         self.__api_key = api_key

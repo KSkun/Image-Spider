@@ -1,5 +1,7 @@
 from abc import abstractmethod, ABC
-from typing import List, Union
+from typing import List, Union, Dict, Type
+
+spider_classes: Dict[str, Type] = {}
 
 
 class Spider(ABC):
