@@ -6,6 +6,13 @@ from typing import Dict
 class SpiderConfig:
     """Spider config data class"""
 
+    mongo_addr: str
+    mongo_port: int
+    mongo_db: str
+
+    image_tmp_dir: str
+    image_url: str
+
     redis_addr: str
     redis_port: int
     redis_db: int

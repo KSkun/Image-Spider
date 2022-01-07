@@ -1,12 +1,18 @@
 import json
 import logging
+import mimetypes
+import os
 import random
+import uuid
 from typing import List, Dict
+import requests
+import urllib3.util
 
-# constants
 from config import C
+from db.image import create_image
 from spiders import spider_classes
 
+# constants
 _supported_ops: Dict[str, str] = {'crawl': 'execute_crawl'}
 _logger = logging.getLogger('image-spider')
 
@@ -16,6 +22,7 @@ class SpiderCmd:
 
     # constants
     redis_id: str
+    task_id: str
     operation: str
     keyword: str
     engines: List[str]
@@ -44,7 +51,35 @@ class SpiderCmd:
             print('fetched %d results from engine %s' % (len(results), engine))
             print(results[random.randint(0, len(results) - 1)])
 
+            for result in results:
+                resp = requests.get(result, headers={
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0'
+                })
+                try:
+                    resp.raise_for_status()
+                except Exception as e:
+                    _logger.error('error when downloading %s: %s' % (result, e))
+                    continue
+                file_type = resp.headers['Content-Type']
+                file_ext = mimetypes.guess_extension(file_type)
+                if file_ext == '.bin':
+                    url_path = urllib3.util.parse_url(result).path
+                    file_ext = os.path.splitext(url_path)[1]
+                file_name = str(uuid.uuid4()) + file_ext
+                file_path = C.image_tmp_dir + '/' + self.task_id + '/' + file_name
+                print(file_path)
+                os.makedirs(os.path.dirname(file_path), exist_ok=True)
+                with open(file_path, 'wb+') as file:
+                    file.write(resp.content)
+                create_image(self.task_id, file_name)
+
+            print('fetched %d results from engine %s' % (len(results), engine))
+
     def execute(self):
+        # do nothing for init cmd
+        if self.operation == 'init':
+            return
+
         # consumer validation
         if self.operation not in _supported_ops:
             raise NotImplementedError('unknown spider operation')
