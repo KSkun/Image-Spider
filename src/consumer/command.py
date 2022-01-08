@@ -9,7 +9,7 @@ import requests
 import urllib3.util
 
 from config import C
-from db.image import create_image
+from db.image import create_image, push_classifier_cmd
 from spiders import spider_classes
 
 # constants
@@ -51,6 +51,7 @@ class SpiderCmd:
             print('fetched %d results from engine %s' % (len(results), engine))
             print(results[random.randint(0, len(results) - 1)])
 
+            os.makedirs(C.image_tmp_dir + '/' + self.task_id, exist_ok=True)
             for result in results:
                 resp = requests.get(result, headers={
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0'
@@ -67,11 +68,13 @@ class SpiderCmd:
                     file_ext = os.path.splitext(url_path)[1]
                 file_name = str(uuid.uuid4()) + file_ext
                 file_path = C.image_tmp_dir + '/' + self.task_id + '/' + file_name
-                print(file_path)
-                os.makedirs(os.path.dirname(file_path), exist_ok=True)
                 with open(file_path, 'wb+') as file:
                     file.write(resp.content)
-                create_image(self.task_id, file_name)
+                image_id = create_image(self.task_id, file_name)
+                push_classifier_cmd(self.task_id, {
+                    'id': str(image_id),
+                    'file': file_name
+                })
 
             print('fetched %d results from engine %s' % (len(results), engine))
 
