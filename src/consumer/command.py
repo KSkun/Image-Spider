@@ -49,7 +49,6 @@ class SpiderCmd:
                     break
             results = results[0:min(len(results), self.limit)]
             print('fetched %d results from engine %s' % (len(results), engine))
-            print(results[random.randint(0, len(results) - 1)])
 
             os.makedirs(C.image_tmp_dir + '/' + self.task_id, exist_ok=True)
             for result in results:

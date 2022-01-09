@@ -70,8 +70,9 @@ class BaiduSpider(Spider):
             if 'objURL' not in result_obj:
                 continue
             url_encoded = result_obj['objURL']
-            url_str = self.__decode_url(url_encoded).replace('https://gimg2.baidu.com/image_search/',
-                                                             'https://gimg2.baidu.com/image_search/?')
+            url_str = self.__decode_url(url_encoded)
+            url_str = url_str.replace('https://gimg2.baidu.com/image_search/',
+                                      'https://gimg2.baidu.com/image_search/?')
             url_params = parse_qs(urlparse(url_str).query)
             real_url: str
             if 'src' not in url_params:
