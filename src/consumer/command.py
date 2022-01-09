@@ -66,6 +66,13 @@ class SpiderCmd:
                 if file_ext == '.bin':
                     url_path = urllib3.util.parse_url(result).path
                     file_ext = os.path.splitext(url_path)[1]
+                if file_ext == '':
+                    if 'jpg' in result or 'jpeg' in result:
+                        file_ext = '.jpg'
+                    elif 'png' in result:
+                        file_ext = '.png'
+                    elif 'gif' in result:
+                        file_ext = '.gif'
                 file_name = str(uuid.uuid4()) + file_ext
                 file_path = C.image_tmp_dir + '/' + self.task_id + '/' + file_name
                 with open(file_path, 'wb+') as file:
