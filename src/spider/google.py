@@ -3,7 +3,7 @@ from typing import List, Union
 import requests
 
 from config import C
-from src.spider.spider import Spider
+from spider.spider import Spider
 
 # constants
 _api_url: str = 'https://customsearch.googleapis.com/customsearch/v1'

@@ -3,7 +3,7 @@ from typing import Dict, Union
 
 import walrus
 
-from src.consumer.command import SpiderCmd, from_json
+from consumer.command import SpiderCmd, from_json
 
 _logger = logging.getLogger('image-spider')
 
