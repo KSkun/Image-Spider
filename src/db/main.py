@@ -22,6 +22,7 @@ def redis_client():
 
 
 def init_db():
+    """Init database objects"""
     global _mongo_client, _mongo_db, _redis_client
 
     _mongo_client = MongoClient(C.mongo_addr, C.mongo_port)

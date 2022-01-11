@@ -13,23 +13,25 @@ from db.image import create_image, push_classifier_cmd
 from spiders import spider_classes
 
 # constants
-_supported_ops: Dict[str, str] = {'crawl': 'execute_crawl'}
+_supported_ops: Dict[str, str] = {'crawl': 'execute_crawl'}  # operation to function name
 _logger = logging.getLogger('image-spider')
 
 
 class SpiderCmd:
-    """Spider consumer data class"""
+    """Spider command data class"""
 
     # constants
-    redis_id: str
-    task_id: str
+    redis_id: str  # redis stream object id
+    task_id: str  # task ObjectId in mongodb
     operation: str
     keyword: str
-    engines: List[str]
-    limit: int
+    engines: List[str]  # search engine names to crawl
+    limit: int  # image count limit to crawl
 
     def execute_crawl(self):
+        """Do crawl with settings in the command"""
         for engine in self.engines:
+            # make spider instance
             if engine not in spider_classes:
                 raise NotImplementedError('unsupported search engine')
             klass = spider_classes[engine]
@@ -37,6 +39,8 @@ class SpiderCmd:
             if engine in C.proxies:
                 proxy = C.proxies[engine]
             spider = klass(self.keyword, proxy_addr=proxy)
+
+            # fetch results
             results = []
             while len(results) < self.limit:
                 try:
@@ -50,8 +54,10 @@ class SpiderCmd:
             results = results[0:min(len(results), self.limit)]
             print('fetched %d results from engine %s' % (len(results), engine))
 
+            # download images
             os.makedirs(C.image_tmp_dir + '/' + self.task_id, exist_ok=True)
             for result in results:
+                # request for image
                 resp = requests.get(result, headers={
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0'
                 })
@@ -60,6 +66,8 @@ class SpiderCmd:
                 except Exception as e:
                     _logger.error('error when downloading %s: %s' % (result, e))
                     continue
+
+                # guess file type
                 file_type = resp.headers['Content-Type']
                 file_ext = mimetypes.guess_extension(file_type)
                 if file_ext == '.bin':
@@ -72,19 +80,22 @@ class SpiderCmd:
                         file_ext = '.png'
                     elif 'gif' in result:
                         file_ext = '.gif'
+
+                # write into file
                 file_name = str(uuid.uuid4()) + file_ext
                 file_path = C.image_tmp_dir + '/' + self.task_id + '/' + file_name
                 with open(file_path, 'wb+') as file:
                     file.write(resp.content)
+
+                # database io
                 image_id = create_image(self.task_id, file_name)
                 push_classifier_cmd(self.task_id, {
                     'id': str(image_id),
                     'file': file_name
                 })
 
-            print('fetched %d results from engine %s' % (len(results), engine))
-
     def execute(self):
+        """Execute the command"""
         # do nothing for init cmd
         if self.operation == 'init':
             return
@@ -101,7 +112,7 @@ class SpiderCmd:
 
         # call registered execution method
         func_name = _supported_ops[self.operation]
-        getattr(self, func_name)()  # call registered execution method
+        getattr(self, func_name)()
 
 
 # simple ORM for SpiderCmd

@@ -7,25 +7,25 @@ from consumer.command import SpiderCmd, from_json
 
 _logger = logging.getLogger('image-spider')
 
-_stream_name: str = 'spider_cmd'
-_group_name: str = 'spider'
-_consumer_name_pattern: str = 'con_%d'
+_stream_name: str = 'spider_cmd'  # redis stream key
+_group_name: str = 'spider'  # consumer group name
+_consumer_name_pattern: str = 'con_%d'  # consumer name with self id
 
-_block_time: int = 100  # 100ms
+_block_time: int = 100  # block read wait time: 100ms
 
 
 class ConsumerClient:
     """Spider redis client class"""
 
     # constants
-    __addr: str
-    __port: int
-    __db: int
+    __addr: str  # redis host address
+    __port: int  # redis port
+    __db: int  # redis database
 
     __client: walrus.Database
     __stream: walrus.containers.ConsumerGroupStream
     __group: walrus.ConsumerGroup
-    __consumer_id: int
+    __consumer_id: int  # self consumer id
 
     def __init__(self, addr: str, port: int, db: int, consumer_id: int):
         self.__addr = addr
@@ -39,12 +39,16 @@ class ConsumerClient:
         self.__stream = getattr(self.__group, _stream_name)
 
     def read_cmd(self) -> Union[SpiderCmd, None]:
-        result = []
+        """Fetch and parse a command to SpiderCmd object"""
+        result = []  # redis stream object
+        # try read command until success
         while len(result) == 0:
             orig_result = self.__group.read(count=1, block=_block_time)
             if len(orig_result) == 0:
                 continue
             result = orig_result[0][1][0]
+
+        # extract command info
         redis_id: str = result[0].decode()
         obj: Dict[bytes, bytes] = result[1]
         try:
@@ -55,4 +59,5 @@ class ConsumerClient:
         return cmd
 
     def ack_cmd(self, redis_id: str):
+        """Acknowledge the command object in redis stream"""
         self.__stream.ack(redis_id)

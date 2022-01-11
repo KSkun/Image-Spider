@@ -4,7 +4,10 @@ from typing import Dict
 
 
 class SpiderConfig:
-    """Spider config data class"""
+    """
+    Spider config data class
+    See https://github.com/KSkun/Image-Spider/blob/master/README.md
+    """
 
     mongo_addr: str
     mongo_port: int
@@ -28,6 +31,7 @@ C: SpiderConfig = SpiderConfig()
 
 
 def load_config(file_path: str):
+    """Load config fields to object C from file"""
     file = open(file_path, 'r')
     json_str = file.read()
     file.close()

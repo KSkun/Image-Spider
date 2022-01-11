@@ -7,9 +7,10 @@ import requests
 from spider.spider import Spider
 
 # constants
-_api_url: str = 'https://image.baidu.com/search/acjson'
-_page_limit: int = 100
+_api_url: str = 'https://image.baidu.com/search/acjson'  # baidu api url
+_page_limit: int = 100  # result limit per page (request)
 
+# character mapping table for decoding objURL
 _decoding_map_digit_letter: Dict[str, str] = {
     'w': 'a', 'k': 'b', 'v': 'c', '1': 'd', 'j': 'e', 'u': 'f', '2': 'g', 'i': 'h', 't': 'i', '3': 'j', 'h': 'k',
     's': 'l', '4': 'm', 'g': 'n', '5': 'o', 'r': 'p', 'q': 'q', '6': 'r', 'f': 's', 'p': 't', '7': 'u', 'e': 'v',
@@ -22,7 +23,7 @@ class BaiduSpider(Spider):
     """Baidu Image Search Engine spider"""
 
     # variables
-    __fetched_count: int = 0
+    __fetched_count: int = 0  # fetched image count
 
     def __init__(self, keyword: str, proxy_addr: Union[str, None] = None):
         super().__init__(keyword, proxy_addr)
@@ -30,6 +31,7 @@ class BaiduSpider(Spider):
 
     @staticmethod
     def __decode_url(url_encoded: str):
+        """Decode baidu's objURL field"""
         url = ''
         for src, dst in _decoding_map_symbol.items():
             url_encoded = url_encoded.replace(src, dst)
@@ -41,6 +43,7 @@ class BaiduSpider(Spider):
         return url
 
     def request(self) -> List[str]:
+        """Request for a new page of results"""
         # send request
         params = {
             'tn': 'resultjson_com',

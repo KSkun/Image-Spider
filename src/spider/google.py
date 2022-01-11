@@ -6,19 +6,19 @@ from config import C
 from spider.spider import Spider
 
 # constants
-_api_url: str = 'https://customsearch.googleapis.com/customsearch/v1'
-_page_limit: int = 10
+_api_url: str = 'https://customsearch.googleapis.com/customsearch/v1'  # baidu api url
+_page_limit: int = 10  # result limit per page (request)
 
 
 class GoogleSpider(Spider):
     """Google Image Search Engine spider"""
 
     # constants
-    __engine_id: str
-    __api_key: str
+    __engine_id: str  # google custom search engine id
+    __api_key: str  # google developer api key
 
     # variables
-    __fetched_count: int = 0
+    __fetched_count: int = 0  # fetched image count
 
     def __init__(self, keyword: str, engine_id: Union[str, None] = None, api_key: Union[str, None] = None,
                  proxy_addr: Union[str, None] = None):
@@ -34,6 +34,7 @@ class GoogleSpider(Spider):
         self.__api_key = api_key
 
     def request(self) -> List[str]:
+        """Request for a new page of results"""
         # send request
         params = {
             'cx': self.__engine_id,

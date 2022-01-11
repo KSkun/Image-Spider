@@ -1,7 +1,5 @@
 from abc import abstractmethod, ABC
-from typing import List, Union, Dict, Type
-
-spider_classes: Dict[str, Type] = {}
+from typing import List, Union
 
 
 class Spider(ABC):
@@ -22,14 +20,14 @@ class Spider(ABC):
     @abstractmethod
     def request(self) -> List[str]:
         """
-        request for search results
+        Request for search results
         :return: list of image URLs
         """
         pass
 
     def refresh_buffer(self) -> None:
         """
-        refresh the result buffer with results from a new request
+        Refresh the result buffer with results from a new request
         """
         assert (len(self.__result_buffer) == 0), 'refresh when buffer is not empty'
         self.__result_buffer = self.request()
@@ -37,7 +35,7 @@ class Spider(ABC):
 
     def next_page(self) -> List[str]:
         """
-        fetch results in one page
+        Fetch results in one page
         :return: list of image URLs
         """
         if len(self.__result_buffer) == 0:
@@ -48,7 +46,7 @@ class Spider(ABC):
 
     def next_result(self) -> str:
         """
-        fetch one result
+        Fetch one result
         :return: an image URL
         """
         if len(self.__result_buffer) == 0:

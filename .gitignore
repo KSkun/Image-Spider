@@ -2,8 +2,7 @@
 
 .idea/
 
-workdir/local.json
-workdir/prod.json
+**/local.json
 workdir/tmp
 
 ### Python template

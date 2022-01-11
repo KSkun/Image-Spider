@@ -6,7 +6,9 @@ from src.spider.baidu import BaiduSpider
 
 
 class TestBaiduSpider(unittest.TestCase):
+    """Function tests of Baidu spider"""
     def test_spider(self):
+        """Test crawling results"""
         spider = BaiduSpider('甘雨')
         results = []
         for i in range(0, 5):
@@ -18,6 +20,7 @@ class TestBaiduSpider(unittest.TestCase):
         self.assertTrue(True)
 
     def test_spider_with_proxy(self):
+        """Test crawling results with proxy"""
         spider = BaiduSpider('甘雨', proxy_addr=os.getenv('HTTP_PROXY'))
         results = []
         for i in range(0, 5):

@@ -1,0 +1,21 @@
+{
+  "image_tmp_dir": "tmp",
+  "image_url": "url prefix for images",
+
+  "mongo_addr": "mongo host address",
+  "mongo_port": 27017,
+  "mongo_db": "classifier_backend",
+
+  "redis_addr": "redis host address",
+  "redis_port": 6379,
+  "redis_db": 0,
+  "consumer_id": 1,
+
+  "gg_engine_id": "google custom search engine id",
+  "gg_api_key": "google developer api key",
+
+  "proxies": {
+    "baidu": "proxy address of baidu spider",
+    "google": "proxy address of google spider"
+  }
+}
