@@ -29,7 +29,7 @@ algorithm can be found in [baidu.py](src/spider/baidu.py).
 The spider for Google uses Google's custom search engine service. Before deployment, you should set up the custom engine
 and get an API key.
 
-URL: `https://customsearch.googleapis.com/customsearch/v1?cx=<engine_id>&key=<api_key>&q=<keyword>&num=<page_limit>&start=<page_start>`
+URL: `GET https://customsearch.googleapis.com/customsearch/v1?cx=<engine_id>&key=<api_key>&q=<keyword>&num=<page_limit>&start=<page_start>`
 
 Parameters:
 
